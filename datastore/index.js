@@ -24,10 +24,21 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+  fs.readdir(exports.dataDir, (err, list) => {
+    if (!list){
+      return list;
+    }
+    var result = _.map(list, (text) => {
+      var number = text.match(/[0-9]/gi).join("");
+      return {"id": number, "text": number};
+    });
+    callback(err, result);
   });
-  callback(null, data);
+
+  // var data = _.map(items, (text, id) => {
+  //   return { id, text };
+  // });
+  // callback(null, data);
 };
 
 exports.readOne = (id, callback) => {
