@@ -42,18 +42,14 @@ exports.readAll = (callback) => {
 };
 
 exports.readOne = (id, callback) => {
-  fs.readFile(exports.dataDir, (err, list)=>{
-    console.log(list[0]);
-  })
-
-  // fs.readdir(exports.dataDir, (err, list) =>{
-  //   for (var item of list){
-  //     if (item === id + ".txt"){
-  //       return {id, "text": 'buy chocolate'}
-  //     }
-  //   }
-  //   throw err;
-  // });
+  fs.readFile(path.join(exports.dataDir, `${id}.txt`), (err, file)=>{
+    if (err){
+      callback(err, null);
+    }else{
+      var text = file.toString('utf8');
+      callback(err, {id, text});
+    }
+  });
 
   // var text = items[id];
   // if (!text) {
@@ -64,24 +60,44 @@ exports.readOne = (id, callback) => {
 };
 
 exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    items[id] = text;
-    callback(null, { id, text });
-  }
+  var location = path.join(exports.dataDir, `${id}.txt`);
+  fs.readFile(location, (err, file) =>{
+    if (err){
+      callback(err, null);
+    }
+    fs.writeFile(location, text, (err) =>{
+      if (err){
+        callback(err, null)
+      }else{
+        callback(err, {id, text});
+      }
+    })
+  })
+  // var item = items[id];
+  // if (!item) {
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   items[id] = text;
+  //   callback(null, { id, text });
+  // }
 };
 
 exports.delete = (id, callback) => {
-  var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback();
-  }
+  fs.unlink(`${exports.dataDir}/${id}`, (err, data) =>{
+    if (err){
+      callback("there is an error");
+    }else{
+      callback(err, data);
+    }
+  });
+  // var item = items[id];
+  // delete items[id];
+  // if (!item) {
+  //   // report an error if item not found
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   callback();
+  // }
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
