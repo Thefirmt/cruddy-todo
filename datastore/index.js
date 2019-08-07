@@ -24,16 +24,36 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
-  fs.readdir(exports.dataDir, (err, list) => {
-    if (!list){
-      return list;
-    }
-    var result = _.map(list, (text) => {
-      var number = text.match(/[0-9]/gi).join("");
-      return {"id": number, "text": number};
-    });
-    callback(err, result);
-  });
+  return new Promise(function(resolve, reject) {
+    var result;
+    var list = fs.readdirSync(exports.dataDir)
+      result = _.map(list, (filename) => {
+        console.log(filename);
+        var number = filename.match(/[0-9]/gi).join("");
+        var data = fs.readFileSync(path.join(exports.dataDir, `${number}.txt`));
+            data = data.toString('utf8');
+            console.log({id: number, text: data});
+            return ({id: number, text: data});
+        });
+        console.log(result)
+        return result
+      });
+
+  // return new Promise((resolve, reject)) {
+  //   fs.readdir(exports.dataDir, (err, list) => {
+  //     if (!list){
+  //       return list;
+  //     }
+  //     var result = _.map(list, (text) => {
+  //       var number = text.match(/[0-9]/gi).join("");
+  //       return {"id": number};
+  //     })
+  //     .then((idObj) => {
+
+  //     });
+  //     callback(err, result);
+  //   }
+  // });
 
   // var data = _.map(items, (text, id) => {
   //   return { id, text };
